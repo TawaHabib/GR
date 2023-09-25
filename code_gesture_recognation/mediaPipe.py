@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 
 mpHands = mp.solutions.hands
-hands = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+hands = mpHands.Hands(max_num_hands=2, min_detection_confidence=0.7)
 mpDraw = mp.solutions.drawing_utils
 
 cap = cv2.VideoCapture(0)
@@ -18,6 +18,7 @@ while True:
     result = hands.process(framergb)
     # post process the result
     if result.multi_hand_landmarks:
+        print(type(result.multi_handedness))
 
         for handslms in result.multi_hand_landmarks:
             mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
