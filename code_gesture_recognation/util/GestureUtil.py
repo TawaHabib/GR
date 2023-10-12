@@ -1,4 +1,19 @@
-class Hand:
+class HandModel:
+
+    def get_hand_position(self):
+        pass
+
+    def get_model_parameter(self):
+        pass
+
+    def get_hand_classification(self):
+        pass
+
+    def get_hand_name(self):
+        pass
+
+
+class HandSkeletalModel(HandModel):
 
     def __init__(self, hand_lm, property_hand):
         self.hand_lm = hand_lm
@@ -18,6 +33,18 @@ class Hand:
         for point in self.hand_lm:
             lm.append(point.get_2d_coordinate())
         return lm
+
+    def get_hand_position(self):
+        return [int(self.sum_x/21), int(self.sum_y/21)]
+
+    def get_model_parameter(self):
+        return self.get_hand_lm_list()
+
+    def get_hand_classification(self):
+        return self.property_hand.index
+
+    def get_hand_name(self):
+        return self.property_hand.label
 
 
 class HandProperty:
@@ -50,3 +77,35 @@ class PixelCoordinate:
 
     def get_2d_coordinate(self):
         return [self.x, self.y]
+
+
+class GestureFacade:
+    @staticmethod
+    def create_hand_model(hand_lm, property_hand):
+        return HandSkeletalModel(hand_lm, property_hand)
+
+    @staticmethod
+    def create_gesture(hand_model, gesture_id, gesture_name):
+        return Gesture(hand_model, gesture_name, gesture_id)
+
+    @staticmethod
+    def create_coordinate(normalization_x, normalization_y, normalization_z, denormalization_x,
+                          denormalization_y, denormalization_z):
+        return PixelCoordinate(normalization_x, normalization_y, normalization_z, denormalization_x,
+                               denormalization_y, denormalization_z)
+
+    @staticmethod
+    def get_hand_model_parameter(hand):
+        return hand.get_model_parameter()
+
+    @staticmethod
+    def get_gesture_position(gesture):
+        return GestureFacade.get_hand_position(gesture.hand)
+
+    @staticmethod
+    def get_hand_position(hand):
+        return hand.get_hand_position()
+
+    @staticmethod
+    def get_gesture_name(gesture):
+        return gesture.gesture_name
