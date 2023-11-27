@@ -7,9 +7,10 @@ from util.GestureUtil import GestureFacade as gf
 # initialize mediapipe
 
 mpHands = mp.solutions.hands
-hands = mpHands.Hands(max_num_hands=2, min_detection_confidence=0.6, model_complexity=1, static_image_mode=False,
+hands = mpHands.Hands(max_num_hands=2, min_detection_confidence=0.6,
                       min_tracking_confidence=0.5)
 mpDraw = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
 
 # Load the gesture recognizer model
 model = load_model('../mp_hand_gesture')
@@ -52,12 +53,12 @@ while True:
                     hands_f.append(gf.create_hand_model(ler, result.multi_handedness[j]))
                     i = 0
                     j += 1
-
             # Drawing landmarksR on frames
-            mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+            mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS,
+                                  mp_drawing_styles.get_default_hand_landmarks_style(),
+                                  mp_drawing_styles.get_default_hand_connections_style())
 
-            # Predict gestures
-
+        # Predict gestures
         for hand in hands_f:
             prediction = model.predict([gf.get_hand_model_parameter(hand)])
             if np.max(prediction) < 0.8:
@@ -68,9 +69,8 @@ while True:
             gestures.append(g)
     # show the predictions on the frame
         for g in gestures:
-            #print(str(g.gesture_id)+g.hand.property_hand.label+str(g.hand.property_hand.score))
             cv2.putText(frame, gf.get_gesture_name(g), gf.get_gesture_position(g),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     # Show the final output
     cv2.imshow("Output", frame)
